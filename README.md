@@ -47,15 +47,11 @@ This project demonstrates a full-stack Web3 application (DApp) integrating a **R
 
 | Admin Dashboard | Voting Area |
 | :---: | :---: |
-| ![Admin Dashboard]<img width="1440" height="900" alt="Ảnh màn hình 2026-01-04 lúc 15 28 51" src="https://github.com/user-attachments/assets/eebf60e6-213f-4dd1-bd6b-7878290d3349" />
-) | ![Voting Area]<img width="1440" height="900" alt="Ảnh màn hình 2026-01-04 lúc 15 34 58" src="https://github.com/user-attachments/assets/12d9a023-dbe0-4d32-89ba-f149920f481b" />
-) |
+| <img width="1440" alt="Admin Dashboard" src="https://github.com/user-attachments/assets/eebf60e6-213f-4dd1-bd6b-7878290d3349" /> | <img width="1440" alt="Voting Area" src="https://github.com/user-attachments/assets/12d9a023-dbe0-4d32-89ba-f149920f481b" /> |
 
 | Voter Registration | Election Results |
 | :---: | :---: |
-| ![Registration]<img width="1440" height="900" alt="Ảnh màn hình 2026-01-04 lúc 15 30 41" src="https://github.com/user-attachments/assets/3ed4f450-e1c4-41fa-aa81-90cff8b1e0b3" />
-) | ![Results]<img width="1440" height="900" alt="Ảnh màn hình 2026-01-04 lúc 15 37 28" src="https://github.com/user-attachments/assets/05f3041a-fe94-4037-8b10-32e6c462c1bf" />
-) |
+| <img width="1440" alt="Voter Registration" src="https://github.com/user-attachments/assets/3ed4f450-e1c4-41fa-aa81-90cff8b1e0b3" /> | <img width="1440" alt="Election Results" src="https://github.com/user-attachments/assets/05f3041a-fe94-4037-8b10-32e6c462c1bf" /> |
 
 ---
 
