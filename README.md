@@ -1,109 +1,77 @@
-# Decentralised Voting (dVoting)
+# 🗳️ VoteChain - Decentralized Voting Application
 
-A decentralised voting system based on [Ethereum blockchain](https://ethereum.org/dapps/) technology.
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![React](https://img.shields.io/badge/frontend-React-61DAFB.svg)
+![Solidity](https://img.shields.io/badge/blockchain-Solidity-363636.svg)
+![Ethereum](https://img.shields.io/badge/network-Ethereum-3C3C3D.svg)
 
-> This started as a final year project for the IT Degree that I was/am pursuing, now aiming to make this more than that.
+**VoteChain** is a secure, decentralized electronic voting system built on the Ethereum Blockchain. It ensures transparency, immutability, and integrity of the election process, solving common issues in traditional voting such as data manipulation and lack of transparency.
 
-## System Workflow
-
-A brief explanation on the basic workflow of the application.
-
-- Admin will create a voting instance by launching/deploying the system in a blockchain network (EVM), then create an election instance and start the election with the details of the election filled in (including candidates for voters to vote).
-- Then the likely voters connect to the same blockchain network register to become a voter. Once the users successfully register, their respective details are sent/displayed in the admins' panel (i.e. verification page).
-- The admin then will check if the registration information (blockchain account address, name, and phone number) is valid and matches with his record. If yes, then the admin approves the registered user making them eligible to take part and cast their respective vote in the election.
-- The registered user (voter) following the approval from the admin casts their vote to the candidate of interest (from the voting page).
-- After some time, depending on the scale of the election the admin ends the election. As that happens the voting is closed and the results are displayed announcing the winner at the top of the results page.
-
-  **See demo [here](https://youtu.be/nh1zfTTrdII "Watch dVoting demo").**
+This project demonstrates a full-stack Web3 application (DApp) integrating a **React.js** frontend with **Solidity** smart contracts.
 
 ---
 
-## Setting up the development environment
+## 🌟 Key Features
 
-### Requirements
+### 🛡️ For Administrators
+- **Election Control:** Deploy smart contracts, initialize election details (Title, Organization).
+- **Phase Management:** strict control over election states (Initialization -> Registration -> Voting -> Ended).
+- **Voter Verification:** KYC-style approval system. Only verified accounts can vote.
+- **Candidate Management:** Add candidates with manifestos/slogans.
+- **Real-time Monitoring:** Dashboard to monitor network status and voter participation.
 
-- [Node.js](https://nodejs.org)
-- [Truffle](https://www.trufflesuite.com/truffle)
-- [Ganache](https://github.com/trufflesuite/ganache-cli) (Cli)
-- [Metamask](https://metamask.io/) (Browser Extension)
-
-#### Getting the requirements
-
-1. Download and install **NodeJS**
-
-   Download and install NodeJS from [here](https://nodejs.org/en/download/ "Go to official NodeJS download page.").
-
-1. Install **truffle** and **ganache-cli** using node packager manager (npm)
-
-   ```shell
-   npm install -g truffle
-   npm install -g ganache-cli
-   ```
-
-1. Install **metamask** browser extension
-
-   Download and install metamask from [here](https://metamask.io/download "Go to official metamask download page.").
-
-### Configuring the project for development
-
-1. Clone this repository
-
-   ```shell
-   git clone https://github.com/arlbibek/dVoting.git
-   cd dVoting
-   ```
-
-2. Run local Ethereum blockchain
-
-   ```shell
-   ganache-cli
-   ```
-
-   > Note: Do not close `ganache-cli` (the blockchain network needs to be running all the time)
-
-3. Configure metamask on the browser with the following details
-
-   New RPC URL: `http://127.0.0.1:8545` *(use `port: 7545` for **ganache gui**, update it in the file:`truffle-config.js` as well)*
-
-   Chain ID: `1337`
-
-4. Import account(s) using private keys from ganache-cli to the metamask extension on the browser
-
-5. Deploy smart contract to the (local) blockchain network (i.e ganache-cli)
-
-   ```shell
-   # on the dVoting directory
-   truffle migrate
-   ```
-
-   > Note: Use `truffle migrate --reset` for re-deployments
-
-6. Launch the development server (frontend)
-
-   ```shell
-   cd client
-   npm install
-   npm start
-   ```
-
-   > If you encounter **error** during `npm install`, please note that you might need to install Microsoft Visual C++ Redistributable packages from [learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) (here is the direct download link for X64: [aka.ms/vs/17/release/vc_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe))
-
-## To-Do List
-
-Possible features to add/improve within the app.
-
-- [ ] **Email Verification**—adding email/phone verification (OTP, etc..) while registering for voters.
-- [ ] **Automated Verification**—adding an automated verification (rather than manually approving by the admin) for the registered users. This could be based on the custom cooperation email, custom list of emails, or custom list of phone numbers, etc.
-- [ ] **Report**—option to generate a report at the end of an election. The report could contain a range of information including the number of people that were eligible to vote, the number of people that participated in the election, a bar-chart/pie-chart showing the election statistics, etc.
-- [ ] **Workflow improvements**—overall workflow improvements (eg. option to add candidates within the election setup page), with overall GUI improvements.
-- [ ] **Multiple election instance**—ability to create multiple election instances without having to re-deploy the smart contract.
-
-## Join us on Discord
-
-[![Join our Discord server!](https://invidget.switchblade.xyz/3jmfdNsHWr)](https://discord.gg/3jmfdNsHWr)
-
-[discord.gg/3jmfdNsHWr](https://discord.gg/3jmfdNsHWr "Join us on Discord!")
+### 👤 For Voters
+- **Secure Registration:** Register with name and phone number (linked to Wallet Address).
+- **One-Person-One-Vote:** Smart contract enforces a single vote per wallet.
+- **Privacy & Transparency:** Votes are anonymous, but the total count is verifiable on the blockchain.
+- **Live Results:** View real-time election standings (sealed until the election ends).
 
 ---
 
-Made with ❤️ by [Bibek Aryal](https://bibeka.com.np/).
+## 🛠️ Tech Stack
+
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Blockchain** | Solidity | Smart Contract development (v0.5.x) |
+| **Framework** | Truffle Suite | Development environment, testing, and deployment pipeline |
+| **Local Chain** | Ganache | Personal blockchain for local development |
+| **Frontend** | React.js | UI Library (Class Components & Hooks) |
+| **Styling** | Tailwind CSS | Utility-first CSS framework for modern UI |
+| **3D Elements** | Three.js | Interactive 3D background elements |
+| **Web3** | Web3.js | Library to interact with Ethereum nodes |
+| **Wallet** | MetaMask | Browser extension for transaction signing |
+
+---
+
+## 📸 Screenshots
+
+*(Bạn hãy thay thế các link ảnh dưới đây bằng ảnh thật từ dự án của bạn khi up lên Github)*
+
+| Admin Dashboard | Voting Area |
+| :---: | :---: |
+| ![Admin Dashboard](.<img width="1440" height="900" alt="Ảnh màn hình 2026-01-04 lúc 15 28 51" src="https://github.com/user-attachments/assets/eebf60e6-213f-4dd1-bd6b-7878290d3349" />
+) | ![Voting Area](.<img width="1440" height="900" alt="Ảnh màn hình 2026-01-04 lúc 15 34 58" src="https://github.com/user-attachments/assets/12d9a023-dbe0-4d32-89ba-f149920f481b" />
+) |
+
+| Voter Registration | Election Results |
+| :---: | :---: |
+| ![Registration](.<img width="1440" height="900" alt="Ảnh màn hình 2026-01-04 lúc 15 30 41" src="https://github.com/user-attachments/assets/3ed4f450-e1c4-41fa-aa81-90cff8b1e0b3" />
+) | ![Results](.<img width="1440" height="900" alt="Ảnh màn hình 2026-01-04 lúc 15 37 28" src="https://github.com/user-attachments/assets/05f3041a-fe94-4037-8b10-32e6c462c1bf" />
+) |
+
+---
+
+## 🚀 Installation & Setup
+
+Follow these steps to run the project locally.
+
+### Prerequisites
+- Node.js (v14 or later recommended)
+- Truffle (`npm install -g truffle`)
+- Ganache (GUI or CLI)
+- MetaMask Browser Extension
+
+### 1. Clone the Repository
+```bash
+git clone [(https://github.com/mthuy04/Blockchain-Decentralized-Voting-System)](https://github.com/mthuy04/Blockchain-Decentralized-Voting-System)
+cd Blockchain-Decentralized-Voting-System
