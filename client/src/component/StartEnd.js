@@ -1,86 +1,55 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 const StartEnd = (props) => {
-  const btn = {
-    display: "block",
-    padding: "21px",
-    margin: "7px",
-    minWidth: "max-content",
-    textAlign: "center",
-    width: "333px",
-    alignSelf: "center",
-  };
   return (
-    <div
-      className="container-main"
-      style={{ borderTop: "1px solid", marginTop: "0px" }}
-    >
-      {!props.elStarted ? (
-        <>
-          {/* edit here to display start election Again button */}
-          {!props.elEnded ? (
-            <>
-              <div
-                className="container-item attention"
-                style={{ display: "block" }}
-              >
-                <h2>Do not forget to add candidates.</h2>
-                <p>
-                  Go to{" "}
-                  <Link
-                    title="Add a new "
-                    to="/addCandidate"
-                    style={{
-                      color: "black",
-                      textDecoration: "underline",
-                    }}
-                  >
-                    add candidates
-                  </Link>{" "}
-                  page.
-                </p>
-              </div>
-              <div className="container-item">
-                <button type="submit" style={btn}>
-                  Start Election {props.elEnded ? "Again" : null}
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="container-item">
-              <center>
-                <p>Re-deploy the contract to start election again.</p>
-              </center>
-            </div>
-          )}
-          {props.elEnded ? (
-            <div className="container-item">
-              <center>
-                <p>The election ended.</p>
-              </center>
-            </div>
-          ) : null}
-        </>
-      ) : (
-        <>
-          <div className="container-item">
-            <center>
-              <p>The election started.</p>
-            </center>
-          </div>
-          <div className="container-item">
+    <div className="glass-panel p-6 rounded-xl flex flex-col justify-between h-full border border-corpBorder relative overflow-hidden group">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+        <i className={`fa-solid ${props.elEnded ? "fa-rotate-right" : props.elStarted ? "fa-stop" : "fa-play"} text-9xl text-white`}></i>
+      </div>
+
+      <div className="relative z-10">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+          Control Actions
+        </h3>
+
+        {!props.elStarted ? (
+          <div className="mt-2">
+            <h2 className="text-xl font-bold text-white mb-2">
+                {props.elEnded ? "Election Concluded" : "Ready to Start"}
+            </h2>
+            <p className="text-slate-400 text-sm mb-6">
+                {props.elEnded 
+                    ? "The voting process has ended. To begin a new election cycle, you must re-deploy the contract." 
+                    : "Initialize the voting process on the blockchain."}
+            </p>
+            
             <button
-              type="button"
-              // onClick={this.endElection}
-              onClick={props.endElFn}
-              style={btn}
+                onClick={props.elEnded ? props.endElFn : props.startElFn} // Lưu ý: Logic cũ của bạn dùng endElFn để redeploy
+                className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm uppercase tracking-wider shadow-lg shadow-blue-600/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-2"
             >
-              End
+                {props.elEnded ? <><i className="fa-solid fa-rotate"></i> Re-Deploy Contract</> : <><i className="fa-solid fa-rocket"></i> Start Election</>}
             </button>
           </div>
-        </>
-      )}
+        ) : (
+          <div className="mt-2">
+             <h2 className="text-xl font-bold text-white mb-2">Election is Live</h2>
+             <p className="text-slate-400 text-sm mb-6">Voting is currently active. End the election to seal results.</p>
+             <button
+                onClick={props.endElFn}
+                className="w-full py-3 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-sm uppercase tracking-wider shadow-lg shadow-red-600/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-2"
+            >
+                <i className="fa-solid fa-lock"></i> End & Seal Results
+            </button>
+          </div>
+        )}
+      </div>
+      
+      <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center text-xs text-slate-500">
+        <span>* Requires Gas Fee</span>
+        <span><i className="fa-solid fa-shield-halved mr-1"></i>Admin Only</span>
+      </div>
     </div>
   );
 };

@@ -1,198 +1,106 @@
-/* ======================================================
-   PROJECT: VNU SECURE VOTING SYSTEM (RE-SKIN)
-   FILE: App.css
-   STYLE: CYBER-SECURITY DASHBOARD / TERMINAL
-   ====================================================== */
+/* client/src/App.css - CHỈ GIỮ LẠI CÁI NÀY */
 
-/* 1. IMPORT FONT CHỮ "CÔNG NGHỆ" */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
-
-/* 2. THIẾT LẬP CHUNG (RESET) */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Rajdhani', sans-serif !important; /* Font mảnh, hiện đại */
-}
-
+/* Reset cơ bản */
 body {
-  background-color: #000000 !important;
-  /* Hiệu ứng lưới Grid xanh mờ (Matrix style) */
-  background-image: 
-    linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px) !important;
-  background-size: 30px 30px !important;
-  color: #a7f3d0 !important;
-  min-height: 100vh;
+  background-color: #0B1120;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  overflow: hidden; /* Quan trọng: Để không bị thanh cuộn kép */
 }
 
-/* 3. NAVBAR -> BIẾN THÀNH "THANH COMMAND CENTER" */
-nav, .navbar {
-  background: #0a0a0a !important;
-  border-bottom: 2px solid #00ff41 !important; /* Viền xanh Hacker */
-  padding: 15px 30px !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  box-shadow: 0 5px 20px rgba(0, 255, 65, 0.1) !important;
-  position: sticky !important;
-  top: 0;
-  z-index: 9999;
+/* Container hình nền 3D */
+#canvas-container {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+  opacity: 0.5;
 }
 
-/* Link trong Navbar */
-nav a, .nav-link {
-  font-family: 'Orbitron', sans-serif !important;
-  color: #00ff41 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 2px !important;
-  font-size: 0.85rem !important;
-  border: 1px solid transparent !important;
-  padding: 8px 16px !important;
-  text-decoration: none !important;
-  transition: all 0.2s ease !important;
+/* Scrollbar đẹp */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+/* Các class tiện ích dùng chung */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-nav a:hover, .nav-link:hover {
-  background: rgba(0, 255, 65, 0.1) !important;
-  border-color: #00ff41 !important;
-  box-shadow: 0 0 10px #00ff41 !important;
-  color: #fff !important;
+.input-corp {
+  background: rgba(11, 17, 32, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: 0.2s;
+}
+.input-corp:focus {
+  outline: none;
+  border-color: #3B82F6;
+  background: rgba(11, 17, 32, 0.8);
 }
 
-/* 4. TIÊU ĐỀ (HEADER) */
-h1 {
-  font-family: 'Orbitron', sans-serif !important;
-  text-align: left !important; /* Đẩy sang trái cho khác bản gốc */
-  margin-left: 5% !important;
-  margin-top: 40px !important;
-  font-size: 2.5rem !important;
-  color: #fff !important;
-  text-shadow: 3px 3px 0px rgba(0, 255, 65, 0.5) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 2px !important;
+.btn-primary {
+  background: #3B82F6;
+  color: white;
+  font-weight: 600;
+  transition: 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+.btn-primary:hover {
+  background: #2563EB;
+  transform: translateY(-1px);
+}
+/* --- SIDEBAR STYLING --- */
+
+/* 1. Style chung cho từng mục Menu */
+.nav-item {
+  color: #94a3b8; /* Màu xám Slate (chưa chọn) */
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 3px solid transparent; /* Viền trái ẩn */
+  margin-bottom: 4px;
 }
 
-/* Thêm dòng chữ giả lập phiên bản hệ thống */
-h1::after {
-  content: " // SYSTEM ONLINE"; 
-  font-size: 0.8rem;
-  color: #00ff41;
-  vertical-align: middle;
-  margin-left: 15px;
-  background: #111;
-  padding: 2px 8px;
-  border: 1px solid #00ff41;
+/* 2. Hiệu ứng khi di chuột vào (Hover) */
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: #f8fafc; /* Màu trắng sáng */
+  transform: translateX(5px); /* Trượt sang phải một chút */
 }
 
-/* 5. KHUNG CHỨA (CONTAINER) -> VUÔNG VỨC */
-.container-main, .container {
-  width: 95% !important;
-  max-width: 1400px !important;
-  margin: 0 auto !important;
+/* 3. Hiệu ứng khi mục đó ĐANG ĐƯỢC CHỌN (Active) */
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 100%); /* Nền Gradient xanh */
+  border-left-color: #3b82f6; /* Viền trái màu xanh nổi bật */
+  color: #60a5fa; /* Chữ màu xanh sáng */
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.4); /* Chữ phát sáng nhẹ */
 }
 
-/* Thẻ Card chính */
-.container-item, .card, .jumbotron {
-  background: rgba(10, 10, 10, 0.95) !important;
-  border: 1px solid #333 !important;
-  border-left: 4px solid #00ff41 !important; /* Viền trái xanh lá */
-  border-radius: 0 !important; /* KHÔNG BO TRÒN -> Nhìn cứng cáp */
-  margin: 30px auto !important;
-  padding: 40px !important;
-  width: 100% !important;
-  box-shadow: none !important;
+/* 4. Hiệu ứng icon bên trong */
+.nav-item i {
+  width: 24px; /* Cố định chiều rộng icon để chữ thẳng hàng */
+  text-align: center;
+  transition: transform 0.3s ease;
 }
 
-/* 6. INPUT FORM -> GIAO DIỆN DÒNG LỆNH */
-input, select, textarea {
-  background: #000 !important;
-  border: 1px solid #333 !important;
-  color: #00ff41 !important;
-  font-family: 'Fira Code', monospace !important;
-  padding: 15px !important;
-  border-radius: 0 !important; /* Input vuông */
-  width: 100% !important;
-  margin-bottom: 20px !important;
-  outline: none !important;
+.nav-item:hover i {
+  transform: scale(1.2); /* Icon phóng to nhẹ khi hover */
+  color: #60a5fa;
 }
 
-input:focus, select:focus {
-  border-color: #00ff41 !important;
-  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3) !important;
+/* 5. Tùy chỉnh thanh cuộn cho đẹp (Scrollbar) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
 }
-
-/* 7. NÚT BẤM -> STYLE "CYBERPUNK" */
-button, .btn {
-  background: #00ff41 !important; /* Nền xanh neon */
-  color: #000 !important; /* Chữ đen */
-  font-family: 'Orbitron', sans-serif !important;
-  font-weight: 900 !important;
-  border: none !important;
-  border-radius: 0 !important; /* Nút vuông */
-  padding: 15px 40px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 1px !important;
-  cursor: pointer !important;
-  /* Tạo hình cắt góc cho nút (giống game Cyberpunk) */
-  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px) !important;
-  transition: all 0.2s !important;
-  width: auto !important;
-  min-width: 180px !important;
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
 }
-
-button:hover, .btn:hover {
-  background: #fff !important;
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.8) !important;
-  transform: translateY(-2px);
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
 }
-
-/* 8. BẢNG DỮ LIỆU (TABLE) */
-table {
-  border: 1px solid #333 !important;
-  width: 100% !important;
-  margin-top: 20px !important;
-}
-
-th {
-  background: #111 !important;
-  color: #00ff41 !important;
-  font-family: 'Orbitron', sans-serif !important;
-  text-transform: uppercase !important;
-  padding: 15px !important;
-  border-bottom: 2px solid #333 !important;
-}
-
-td {
-  border-bottom: 1px solid #222 !important;
-  padding: 15px !important;
-  color: #fff !important;
-  font-size: 1.1rem !important;
-}
-
-tr:hover td {
-  background: #111 !important;
-  color: #00ff41 !important;
-}
-
-/* 9. MÃ VÍ (ADDRESS CODE) */
-code {
-  background: #050505 !important;
-  border: 1px dashed #555 !important;
-  color: #ff0055 !important; /* Màu đỏ hồng nổi bật trên nền đen */
-  font-family: 'Fira Code', monospace !important;
-  padding: 5px 10px !important;
-  font-size: 1rem !important;
-}
-
-/* 10. THÔNG BÁO (ALERTS) */
-.info, .attention, .alert, .success {
-  background: #111 !important;
-  border: 1px solid #333 !important;
-  border-left: 4px solid #00ff41 !important;
-  color: #ccc !important;
-  padding: 20px !important;
-  margin: 20px 0 !important;
-  border-radius: 0 !important;
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }

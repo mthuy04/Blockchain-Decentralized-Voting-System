@@ -1,48 +1,44 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 
-import "./Navbar.css";
+// Xóa dòng import Navbar.css
+// import "./Navbar.css";
 
 export default function NavbarAdmin() {
-  const [open, setOpen] = useState(false);
   return (
     <nav>
-      <div className="header">
+      <div className="navbar-brand">
         <NavLink to="/">
-          <i className="fab fa-hive" /> ADMIN
+          <i className="fas fa-user-shield" /> ADMIN PANEL
         </NavLink>
       </div>
-      <ul
-        className="navbar-links"
-        style={{ transform: open ? "translateX(0px)" : "" }}
-      >
+      <ul>
         <li>
           <NavLink to="/Verification" activeClassName="nav-active">
-            Verification
+            <i className="fas fa-user-check" /> Verification
           </NavLink>
         </li>
         <li>
           <NavLink to="/AddCandidate" activeClassName="nav-active">
-            Add Candidate
+            <i className="fas fa-user-plus" /> Add Candidate
           </NavLink>
         </li>
         <li>
           <NavLink to="/Registration" activeClassName="nav-active">
-            <i className="far fa-registered" /> Registration
+            <i className="far fa-list-alt" /> Voter List
           </NavLink>
         </li>
         <li>
           <NavLink to="/Voting" activeClassName="nav-active">
-            <i className="fas fa-vote-yea" /> Voting
+            <i className="fas fa-eye" /> View Ballot
           </NavLink>
         </li>
         <li>
           <NavLink to="/Results" activeClassName="nav-active">
-            <i className="fas fa-poll-h" /> Results
+            <i className="fas fa-chart-bar" /> Results
           </NavLink>
         </li>
       </ul>
-      <i onClick={() => setOpen(!open)} className="fas fa-bars burger-menu"></i>
     </nav>
   );
 }

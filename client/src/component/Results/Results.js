@@ -1,217 +1,119 @@
-// Node modules
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-// Components
-import Navbar from "../Navbar/Navigation";
-import NavbarAdmin from "../Navbar/NavigationAdmin";
-import NotInit from "../NotInit";
-
-// Contract
-import getWeb3 from "../../getWeb3";
-import Election from "../../contracts/Election.json";
-
-// CSS
-import "./Results.css";
-
-export default class Result extends Component {
+export default class Results extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ElectionInstance: undefined,
-      account: null,
-      web3: null,
-      isAdmin: false,
-      candidateCount: undefined,
       candidates: [],
-      isElStarted: false,
+      winner: null,
       isElEnded: false,
+      loading: true
     };
   }
+
   componentDidMount = async () => {
-    // refreshing once
-    if (!window.location.hash) {
-      window.location = window.location + "#loaded";
-      window.location.reload();
-    }
+    const { contract } = this.props;
+    if (!contract) return;
+
     try {
-      // Get network provider and web3 instance.
-      const web3 = await getWeb3();
-
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
-
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = Election.networks[networkId];
-      const instance = new web3.eth.Contract(
-        Election.abi,
-        deployedNetwork && deployedNetwork.address
-      );
-
-      // Set web3, accounts, and contract to the state, and then proceed with an
-      // example of interacting with the contract's methods.
-      this.setState({ web3, ElectionInstance: instance, account: accounts[0] });
-
-      // Get total number of candidates
-      const candidateCount = await this.state.ElectionInstance.methods
-        .getTotalCandidate()
-        .call();
-      this.setState({ candidateCount: candidateCount });
-
-      // Get start and end values
-      const start = await this.state.ElectionInstance.methods.getStart().call();
-      this.setState({ isElStarted: start });
-      const end = await this.state.ElectionInstance.methods.getEnd().call();
+      const end = await contract.methods.getEnd().call();
       this.setState({ isElEnded: end });
 
-      // Loadin Candidates detials
-      for (let i = 1; i <= this.state.candidateCount; i++) {
-        const candidate = await this.state.ElectionInstance.methods
-          .candidateDetails(i - 1)
-          .call();
-        this.state.candidates.push({
-          id: candidate.candidateId,
-          header: candidate.header,
-          slogan: candidate.slogan,
-          voteCount: candidate.voteCount,
-        });
-      }
+      const count = await contract.methods.getTotalCandidate().call();
+      let list = [];
+      let maxVote = -1;
+      let tempWinner = null;
 
-      this.setState({ candidates: this.state.candidates });
-
-      // Admin account and verification
-      const admin = await this.state.ElectionInstance.methods.getAdmin().call();
-      if (this.state.account === admin) {
-        this.setState({ isAdmin: true });
+      for (let i = 0; i < count; i++) {
+        const candidate = await contract.methods.candidateDetails(i).call();
+        const voteCount = parseInt(candidate.voteCount);
+        list.push({ ...candidate, voteCount: voteCount });
+        
+        if (voteCount > maxVote) {
+            maxVote = voteCount;
+            tempWinner = candidate;
+        }
       }
-    } catch (error) {
-      // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
-      );
-      console.error(error);
+      this.setState({ candidates: list, winner: tempWinner, loading: false });
+    } catch (error) { 
+        console.error(error); 
+        this.setState({ loading: false });
     }
   };
 
   render() {
-    if (!this.state.web3) {
-      return (
-        <>
-          {this.state.isAdmin ? <NavbarAdmin /> : <Navbar />}
-          <center>Loading Web3, accounts, and contract...</center>
-        </>
-      );
+    // --- 1. CHẶN XEM KẾT QUẢ KHI CHƯA KẾT THÚC ---
+    if (!this.state.isElEnded) {
+        return (
+            <div className="max-w-2xl mx-auto mt-20 text-center animate-fade-in">
+                 <div className="glass-panel p-12 rounded-2xl border border-blue-500/30 bg-blue-900/10">
+                    <div className="w-24 h-24 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i className="fa-solid fa-hourglass-half text-4xl text-blue-400 animate-pulse"></i>
+                    </div>
+                    <h1 className="text-3xl font-bold text-white mb-4">Results Sealed</h1>
+                    <p className="text-slate-400 text-lg mb-8">
+                        The election is currently <strong>in progress</strong>. 
+                        <br/>
+                        To ensure fairness, vote counts are hidden until the election is officially ended.
+                    </p>
+                    <Link to="/" className="inline-block bg-slate-700 hover:bg-slate-600 text-white font-bold px-8 py-3 rounded-lg transition-all">
+                        <i className="fa-solid fa-arrow-left mr-2"></i> Return to Dashboard
+                    </Link>
+                 </div>
+            </div>
+        );
     }
 
+    // --- 2. KHI ĐÃ END THÌ MỚI HIỆN KẾT QUẢ ---
     return (
-      <>
-        {this.state.isAdmin ? <NavbarAdmin /> : <Navbar />}
-        <br />
-        <div>
-          {!this.state.isElStarted && !this.state.isElEnded ? (
-            <NotInit />
-          ) : this.state.isElStarted && !this.state.isElEnded ? (
-            <div className="container-item attention">
-              <center>
-                <h3>The election is being conducted at the movement.</h3>
-                <p>Result will be displayed once the election has ended.</p>
-                <p>Go ahead and cast your vote {"(if not already)"}.</p>
-                <br />
-                <Link
-                  to="/Voting"
-                  style={{ color: "black", textDecoration: "underline" }}
-                >
-                  Voting Page
-                </Link>
-              </center>
+      <div className="max-w-4xl mx-auto animate-fade-in">
+        <div className="mb-8"><h1 className="text-3xl font-bold text-white mb-2">Final Results</h1><p className="text-slate-400">Official tally from the blockchain.</p></div>
+        
+        {/* HIỆN NGƯỜI CHIẾN THẮNG */}
+        {this.state.winner && (
+            <div className="glass-panel p-8 rounded-xl mb-8 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-20"><i className="fa-solid fa-trophy text-9xl text-yellow-500"></i></div>
+                <div className="relative z-10">
+                    <div className="text-yellow-400 font-bold tracking-widest text-xs uppercase mb-2">🎉 Election Winner</div>
+                    <h2 className="text-4xl font-bold text-white mb-2">{this.state.winner.header}</h2>
+                    <p className="text-yellow-100 italic text-lg opacity-80 mb-4">"{this.state.winner.slogan}"</p>
+                    <div className="inline-block bg-yellow-500 text-black font-bold px-4 py-2 rounded-lg shadow-lg shadow-yellow-500/20">
+                        {this.state.winner.voteCount} Votes
+                    </div>
+                </div>
             </div>
-          ) : !this.state.isElStarted && this.state.isElEnded ? (
-            displayResults(this.state.candidates)
-          ) : null}
+        )}
+
+        {/* BẢNG XẾP HẠNG */}
+        <div className="grid grid-cols-1 gap-4">
+            {this.state.candidates
+             .sort((a, b) => b.voteCount - a.voteCount) // Sắp xếp từ cao xuống thấp
+             .map((candidate, index) => (
+                <div key={candidate.candidateId} className="glass-panel p-4 rounded-xl flex items-center justify-between border border-corpBorder hover:border-blue-500/30 transition">
+                    <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${index === 0 ? 'bg-yellow-500 text-black' : 'bg-slate-700'}`}>
+                            {index + 1}
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-white text-lg">{candidate.header}</h3>
+                            <div className="w-32 md:w-64 h-1.5 bg-slate-800 rounded-full mt-2 overflow-hidden">
+                                <div className={`h-full ${index === 0 ? 'bg-yellow-500' : 'bg-blue-600'}`} style={{ width: `${Math.min(candidate.voteCount * 10, 100)}%` }}></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="text-right">
+                        <span className={`text-2xl font-bold block ${index === 0 ? 'text-yellow-400' : 'text-white'}`}>{candidate.voteCount}</span>
+                        <span className="text-xs text-slate-500 uppercase">Votes</span>
+                    </div>
+                </div>
+            ))}
         </div>
-      </>
+        
+        <div className="mt-8 text-center">
+            <Link to="/" className="text-slate-500 hover:text-white text-sm transition-colors">Back to Home</Link>
+        </div>
+      </div>
     );
   }
-}
-
-function displayWinner(candidates) {
-  const getWinner = (candidates) => {
-    // Returns an object having maxium vote count
-    let maxVoteRecived = 0;
-    let winnerCandidate = [];
-    for (let i = 0; i < candidates.length; i++) {
-      if (candidates[i].voteCount > maxVoteRecived) {
-        maxVoteRecived = candidates[i].voteCount;
-        winnerCandidate = [candidates[i]];
-      } else if (candidates[i].voteCount === maxVoteRecived) {
-        winnerCandidate.push(candidates[i]);
-      }
-    }
-    return winnerCandidate;
-  };
-  const renderWinner = (winner) => {
-    return (
-      <div className="container-winner">
-        <div className="winner-info">
-          <p className="winner-tag">Winner!</p>
-          <h2> {winner.header}</h2>
-          <p className="winner-slogan">{winner.slogan}</p>
-        </div>
-        <div className="winner-votes">
-          <div className="votes-tag">Total Votes: </div>
-          <div className="vote-count">{winner.voteCount}</div>
-        </div>
-      </div>
-    );
-  };
-  const winnerCandidate = getWinner(candidates);
-  return <>{winnerCandidate.map(renderWinner)}</>;
-}
-
-export function displayResults(candidates) {
-  const renderResults = (candidate) => {
-    return (
-      <tr>
-        <td>{candidate.id}</td>
-        <td>{candidate.header}</td>
-        <td>{candidate.voteCount}</td>
-      </tr>
-    );
-  };
-  return (
-    <>
-      {candidates.length > 0 ? (
-        <div className="container-main">{displayWinner(candidates)}</div>
-      ) : null}
-      <div className="container-main" style={{ borderTop: "1px solid" }}>
-        <h2>Results</h2>
-        <small>Total candidates: {candidates.length}</small>
-        {candidates.length < 1 ? (
-          <div className="container-item attention">
-            <center>No candidates.</center>
-          </div>
-        ) : (
-          <>
-            <div className="container-item">
-              <table>
-                <tr>
-                  <th>Id</th>
-                  <th>Candidate</th>
-                  <th>Votes</th>
-                </tr>
-                {candidates.map(renderResults)}
-              </table>
-            </div>
-            <div
-              className="container-item"
-              style={{ border: "1px solid black" }}
-            >
-              <center>That is all.</center>
-            </div>
-          </>
-        )}
-      </div>
-    </>
-  );
 }

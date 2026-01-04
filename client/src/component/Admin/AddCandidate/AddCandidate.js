@@ -1,205 +1,85 @@
 import React, { Component } from "react";
 
-import Navbar from "../../Navbar/Navigation";
-import NavbarAdmin from "../../Navbar/NavigationAdmin";
-
-import getWeb3 from "../../../getWeb3";
-import Election from "../../../contracts/Election.json";
-
-import AdminOnly from "../../AdminOnly";
-
-import "./AddCandidate.css";
-
 export default class AddCandidate extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ElectionInstance: undefined,
-      web3: null,
-      accounts: null,
-      isAdmin: false,
       header: "",
       slogan: "",
       candidates: [],
-      candidateCount: undefined,
+      isElStarted: false,
+      isElEnded: false,
     };
   }
 
   componentDidMount = async () => {
-    // refreshing page only once
-    if (!window.location.hash) {
-      window.location = window.location + "#loaded";
-      window.location.reload();
-    }
+    // Dùng Contract từ App.js truyền xuống
+    const { contract } = this.props;
+    if (!contract) return;
 
     try {
-      // Get network provider and web3 instance.
-      const web3 = await getWeb3();
+      const start = await contract.methods.getStart().call();
+      const end = await contract.methods.getEnd().call();
+      this.setState({ isElStarted: start, isElEnded: end });
 
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
-
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = Election.networks[networkId];
-      const instance = new web3.eth.Contract(
-        Election.abi,
-        deployedNetwork && deployedNetwork.address
-      );
-      // Set web3, accounts, and contract to the state, and then proceed with an
-      // example of interacting with the contract's methods.
-      this.setState({
-        web3: web3,
-        ElectionInstance: instance,
-        account: accounts[0],
-      });
-
-      // Total number of candidates
-      const candidateCount = await this.state.ElectionInstance.methods
-        .getTotalCandidate()
-        .call();
-      this.setState({ candidateCount: candidateCount });
-
-      const admin = await this.state.ElectionInstance.methods.getAdmin().call();
-      if (this.state.account === admin) {
-        this.setState({ isAdmin: true });
+      const count = await contract.methods.getTotalCandidate().call();
+      let list = [];
+      for (let i = 0; i < count; i++) {
+        const candidate = await contract.methods.candidateDetails(i).call();
+        list.push(candidate);
       }
-
-      // Loading Candidates details
-      for (let i = 0; i < this.state.candidateCount; i++) {
-        const candidate = await this.state.ElectionInstance.methods
-          .candidateDetails(i)
-          .call();
-        this.state.candidates.push({
-          id: candidate.candidateId,
-          header: candidate.header,
-          slogan: candidate.slogan,
-        });
-      }
-
-      this.setState({ candidates: this.state.candidates });
-    } catch (error) {
-      // Catch any errors for any of the above operations.
-      console.error(error);
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
-      );
-    }
-  };
-  updateHeader = (event) => {
-    this.setState({ header: event.target.value });
-  };
-  updateSlogan = (event) => {
-    this.setState({ slogan: event.target.value });
+      this.setState({ candidates: list });
+    } catch (error) { console.error(error); }
   };
 
   addCandidate = async () => {
-    await this.state.ElectionInstance.methods
+    if (this.state.isElStarted || this.state.isElEnded) return;
+    await this.props.contract.methods
       .addCandidate(this.state.header, this.state.slogan)
-      .send({ from: this.state.account, gas: 1000000 });
+      .send({ from: this.props.account, gas: 1000000 });
     window.location.reload();
   };
 
   render() {
-    if (!this.state.web3) {
-      return (
-        <>
-          {this.state.isAdmin ? <NavbarAdmin /> : <Navbar />}
-          <center>Loading Web3, accounts, and contract...</center>
-        </>
-      );
-    }
-    if (!this.state.isAdmin) {
-      return (
-        <>
-          <Navbar />
-          <AdminOnly page="Add Candidate Page." />
-        </>
-      );
-    }
     return (
-      <>
-        <NavbarAdmin />
-        <div className="container-main">
-          <h2>Add a new candidate</h2>
-          <small>Total candidates: {this.state.candidateCount}</small>
-          <div className="container-item">
-            <form className="form">
-              <label className={"label-ac"}>
-                Header
-                <input
-                  className={"input-ac"}
-                  type="text"
-                  placeholder="eg. Marcus"
-                  value={this.state.header}
-                  onChange={this.updateHeader}
-                />
-              </label>
-              <label className={"label-ac"}>
-                Slogan
-                <input
-                  className={"input-ac"}
-                  type="text"
-                  placeholder="eg. It is what it is"
-                  value={this.state.slogan}
-                  onChange={this.updateSlogan}
-                />
-              </label>
-              <button
-                className="btn-add"
-                disabled={
-                  this.state.header.length < 3 || this.state.header.length > 21
-                }
-                onClick={this.addCandidate}
-              >
-                Add
-              </button>
-            </form>
-          </div>
+      <div className="max-w-5xl mx-auto animate-fade-in pb-10">
+        <div className="flex justify-between items-end mb-8">
+            <div><h1 className="text-3xl font-bold text-white tracking-tight">Candidate Management</h1><p className="text-slate-400 text-sm mt-1">Configure election participants.</p></div>
+            <div className={`px-4 py-2 rounded-full border text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${this.state.isElEnded ? 'bg-red-500/10 border-red-500/30 text-red-400' : this.state.isElStarted ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : 'bg-green-500/10 border-green-500/30 text-green-400'}`}>
+                <span className={`w-2 h-2 rounded-full ${this.state.isElEnded ? 'bg-red-500' : this.state.isElStarted ? 'bg-orange-500' : 'bg-green-500'}`}></span>
+                {this.state.isElEnded ? "Ended" : this.state.isElStarted ? "Started" : "Open"}
+            </div>
         </div>
-        {loadAdded(this.state.candidates)}
-      </>
+
+        {!this.state.isElStarted && !this.state.isElEnded ? (
+            <div className="glass-panel p-6 rounded-xl mb-8 border border-corpBorder shadow-lg">
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5"><div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30"><i className="fa-solid fa-user-plus text-white text-sm"></i></div><h3 className="text-lg font-bold text-white">Add New Profile</h3></div>
+                <div className="flex flex-col md:flex-row gap-5 items-end">
+                    <div className="flex-1 w-full"><label className="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Name</label><input className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="Name..." value={this.state.header} onChange={(e) => this.setState({ header: e.target.value })}/></div>
+                    <div className="flex-[2] w-full"><label className="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Slogan</label><input className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-blue-500 outline-none" placeholder="Slogan..." value={this.state.slogan} onChange={(e) => this.setState({ slogan: e.target.value })}/></div>
+                    <button className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3 rounded-lg shadow-lg" onClick={this.addCandidate} disabled={this.state.header.length < 3}>Submit</button>
+                </div>
+            </div>
+        ) : (
+
+ // HIỆN THÔNG BÁO KHÓA NẾU ĐÃ KẾT THÚC
+ <div className={`glass-panel p-6 rounded-xl mb-8 border-l-4 ${this.state.isElEnded ? 'border-red-500 bg-red-500/10' : 'border-orange-500 bg-orange-500/10'}`}>
+ <h3 className={`${this.state.isElEnded ? 'text-red-400' : 'text-orange-400'} font-bold text-xl mb-1`}>
+    <i className="fa-solid fa-lock mr-2"></i>
+    {this.state.isElEnded ? "Election Terminated" : "Election In Progress"}
+ </h3>
+ <p className="text-slate-300">
+    Candidate registration is <strong>locked</strong>. To ensure integrity, no candidates can be added or modified at this stage.
+ </p>
+</div>
+)}
+
+        <div className="glass-panel rounded-xl overflow-hidden border border-corpBorder shadow-xl">
+            <div className="px-6 py-4 bg-white/5 border-b border-white/5 flex justify-between items-center"><h3 className="font-bold text-white text-lg">Registry Database</h3><span className="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700">Total: {this.state.candidates.length}</span></div>
+            <div className="overflow-x-auto"><table className="w-full"><thead><tr className="bg-slate-900/50 text-xs text-slate-400 uppercase tracking-wider border-b border-gray-800"><th className="px-6 py-4 text-left w-24">ID</th><th className="px-6 py-4 text-left">Name</th><th className="px-6 py-4 text-left">Manifesto</th></tr></thead><tbody className="divide-y divide-gray-800/50">{this.state.candidates.map((c) => (<tr key={c.candidateId} className="hover:bg-white/5"><td className="px-6 py-4 text-slate-500 font-mono text-sm">#{c.candidateId}</td><td className="px-6 py-4 font-bold text-white"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs">{c.header.charAt(0)}</div>{c.header}</div></td><td className="px-6 py-4 text-slate-400 italic">"{c.slogan}"</td></tr>))}</tbody></table></div>
+        </div>
+      </div>
     );
   }
 }
-export function loadAdded(candidates) {
-  const renderAdded = (candidate) => {
-    return (
-      <>
-        <div className="container-list success">
-          <div
-            style={{
-              maxHeight: "21px",
-              overflow: "auto",
-            }}
-          >
-            {candidate.id}. <strong>{candidate.header}</strong>:{" "}
-            {candidate.slogan}
-          </div>
-        </div>
-      </>
-    );
-  };
-  return (
-    <div className="container-main" style={{ borderTop: "1px solid" }}>
-      <div className="container-item info">
-        <center>Candidates List</center>
-      </div>
-      {candidates.length < 1 ? (
-        <div className="container-item alert">
-          <center>No candidates added.</center>
-        </div>
-      ) : (
-        <div
-          className="container-item"
-          style={{
-            display: "block",
-            backgroundColor: "#DDFFFF",
-          }}
-        >
-          {candidates.map(renderAdded)}
-        </div>
-      )}
-    </div>
-  );
-}
+           

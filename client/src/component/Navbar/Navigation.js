@@ -1,36 +1,37 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 
-import "./Navbar.css";
+// Xóa dòng import Navbar.css
+// import "./Navbar.css";
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
   return (
     <nav>
-      <NavLink to="/" className="header">
-        <i className="fab fa-hive"></i> Voter
+      <NavLink to="/" className="navbar-brand">
+        <i className="fas fa-vote-yea" /> VOTING APP
       </NavLink>
-      <ul
-        className="navbar-links"
-        style={{ width: "35%", transform: open ? "translateX(0px)" : "" }}
-      >
+      <ul>
+        <li>
+          <NavLink to="/" exact activeClassName="nav-active">
+            <i className="fas fa-home" /> Home
+          </NavLink>
+        </li>
         <li>
           <NavLink to="/Registration" activeClassName="nav-active">
-            <i className="far fa-registered" /> Registration
+            <i className="far fa-id-card" /> Registration
           </NavLink>
         </li>
         <li>
           <NavLink to="/Voting" activeClassName="nav-active">
-            <i className="fas fa-vote-yea" /> Voting
+            <i className="fas fa-person-booth" /> Voting Area
           </NavLink>
         </li>
         <li>
           <NavLink to="/Results" activeClassName="nav-active">
-            <i className="fas fa-poll-h" /> Results
+            <i className="fas fa-chart-pie" /> Live Results
           </NavLink>
         </li>
       </ul>
-      <i onClick={() => setOpen(!open)} className="fas fa-bars burger-menu"></i>
     </nav>
   );
 }
